@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = 'tnnl'
   gem.require_paths = ['lib']
   gem.version       = Tnnl::VERSION
+
+  gem.add_dependency 'net-ssh', '~> 2.3.0'
 end
