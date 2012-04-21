@@ -5,8 +5,6 @@ module Tnnl
     class << self
 
       def find_open_port(port)
-        port = port.to_i
-
         while true
           begin
             # Attempt to bind to the requested port.
@@ -16,7 +14,7 @@ module Tnnl
             
             # If an exception wasn't raised, the current port is available.
             # Close the socket now (so we can use the port for realsies) 
-            # and return the port to exit the loop.
+            # and exit the loop by returning the port.
             socket.close
             return port
           rescue Errno::EADDRINUSE
@@ -30,9 +28,17 @@ module Tnnl
         Net::SSH.start(host, user) do |ssh|
           ssh.forward.local(local_port, '127.0.0.1', remote_port)
           run = true
-          trap('INT') { run = false; puts "\r" }
+          trap('INT') { run = false }
           ssh.loop(0.1) { run }
         end
+      rescue Timeout::Error
+        puts 'ERROR: connection timed out'
+      rescue Net::SSH::AuthenticationFailed
+        puts 'ERROR: authentication failed'
+      rescue Net::SSH::HostKeyMismatch => e
+        # TODO: warn user about man-in-the-middle attacks
+        # and prompt them to accept new key
+        puts 'ERROR: host key mismatch'
       end
 
     end

@@ -60,7 +60,7 @@ module Tnnl
           host = config[:host_name]
         end
 
-        parts = [host, user, local_port, remote_port]
+        parts = [host, user, local_port.to_i, remote_port.to_i]
         raise ArgumentError if parts.any? { |a| a.nil? }
 
         parts
