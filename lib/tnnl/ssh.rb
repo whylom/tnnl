@@ -2,8 +2,10 @@ require 'net/ssh'
 
 module Tnnl
   module SSH
-    class << self
 
+    TIMEOUT = 15
+
+    class << self
       def find_open_port(port)
         while true
           begin
@@ -25,11 +27,13 @@ module Tnnl
       end
 
       def open(host, user, local_port, remote_port)
-        Net::SSH.start(host, user) do |ssh|
-          ssh.forward.local(local_port, '127.0.0.1', remote_port)
-          run = true
-          trap('INT') { run = false }
-          ssh.loop(0.1) { run }
+        Timeout.timeout(TIMEOUT) do
+          Net::SSH.start(host, user) do |ssh|
+            ssh.forward.local(local_port, '127.0.0.1', remote_port)
+            run = true
+            trap('INT') { run = false }
+            ssh.loop(0.1) { run }
+          end
         end
       rescue Timeout::Error
         puts 'ERROR: connection timed out'
@@ -40,7 +44,6 @@ module Tnnl
         # and prompt them to accept new key
         puts 'ERROR: host key mismatch'
       end
-
     end
   end
 end
