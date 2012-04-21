@@ -32,6 +32,15 @@ module Tnnl
         puts "local:#{local_port} ===> #{user}@#{host}:#{remote_port}"
         
         Tnnl::SSH.open(host, user, local_port, remote_port)
+
+      rescue Tnnl::SSH::TimeoutError
+        puts 'ERROR: connection timed out'
+      rescue Tnnl::SSH::AuthenticationFailed
+        puts 'ERROR: authentication failed'
+      rescue Tnnl::SSH::HostKeyMismatch
+        # TODO: warn user about man-in-the-middle attacks
+        # and prompt them to accept new key
+        puts 'ERROR: host key mismatch'
       end
 
       def parse_connection(connection)

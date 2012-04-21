@@ -3,6 +3,10 @@ require 'net/ssh'
 module Tnnl
   module SSH
 
+    class TimeoutError < Timeout::Error; end
+    class AuthenticationFailed < Net::SSH::AuthenticationFailed; end
+    class HostKeyMismatch < Net::SSH::HostKeyMismatch; end
+
     TIMEOUT = 15
 
     class << self
@@ -36,13 +40,11 @@ module Tnnl
           end
         end
       rescue Timeout::Error
-        puts 'ERROR: connection timed out'
+        raise Tnnl::SSH::TimeoutError
       rescue Net::SSH::AuthenticationFailed
-        puts 'ERROR: authentication failed'
+        raise Tnnl::SSH::AuthenticationFailed
       rescue Net::SSH::HostKeyMismatch => e
-        # TODO: warn user about man-in-the-middle attacks
-        # and prompt them to accept new key
-        puts 'ERROR: host key mismatch'
+        raise Tnnl::SSH::HostKeyMismatch
       end
     end
   end
