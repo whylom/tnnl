@@ -22,9 +22,6 @@ The command-line interface will look something like this:
     $ tnnl foo:3000
     #=> Looks up username and hostname in your SSH config under "foo".
     
-    $ tnnl foo
-    #=> Reads the remote port from your SSH config (if possible).
-    
     $ tnnl list
     1. local:3307 ===> foo:3306
     2. local:3000 ===> 107.22.164.247:3000
