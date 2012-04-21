@@ -33,6 +33,8 @@ module Tnnl
         
         Tnnl::SSH.open(host, user, local_port, remote_port)
 
+      rescue Tnnl::SSH::HostNotFound
+        puts 'ERROR: could not resolve host'
       rescue Tnnl::SSH::TimeoutError
         puts 'ERROR: connection timed out'
       rescue Tnnl::SSH::AuthenticationFailed

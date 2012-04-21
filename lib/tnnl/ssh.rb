@@ -3,6 +3,7 @@ require 'net/ssh'
 module Tnnl
   module SSH
 
+    class HostNotFound < SocketError; end
     class TimeoutError < Timeout::Error; end
     class AuthenticationFailed < Net::SSH::AuthenticationFailed; end
     class HostKeyMismatch < Net::SSH::HostKeyMismatch; end
@@ -39,6 +40,8 @@ module Tnnl
             ssh.loop(0.1) { run }
           end
         end
+      rescue SocketError
+        raise Tnnl::SSH::HostNotFound
       rescue Timeout::Error
         raise Tnnl::SSH::TimeoutError
       rescue Net::SSH::AuthenticationFailed
