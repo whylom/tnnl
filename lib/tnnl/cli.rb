@@ -2,6 +2,9 @@ module Tnnl
   module CLI
     class << self
 
+      # This is the entry-point for all command-line operations. It parses 
+      # arguments and delegates to the appropriate methods in Tnnl::CLI and 
+      # Tnnl::SSH.
       def run!(args)
         command = args.shift || 'help'
 
@@ -42,6 +45,9 @@ module Tnnl
         end
       end
 
+      # Open an SSH tunnel. After parsing the user's command-input input, find
+      # the closest available local port. Rescue from common SSH errors, and 
+      # provide appropriate feedback to the user.
       def open(connection)
         host, user, local_port, remote_port = parse_connection(connection)
         local_port = Tnnl::SSH.find_open_port(local_port)
@@ -60,6 +66,9 @@ module Tnnl
         handle_host_key_mismatch(e)
       end
 
+      # Parses input from command-line and returns an array of SSH connection
+      # parameters suitable for passing to Tnnl::SSH.open. Raises ArgumentError
+      # if any of the required parameters are missing.
       def parse_connection(connection)
         parts = connection.split(':')
 

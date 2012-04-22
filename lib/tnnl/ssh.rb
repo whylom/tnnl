@@ -24,6 +24,8 @@ module Tnnl
 
     class << self
 
+      # Returns an available port on localhost, starting with the provided port 
+      # and incrementing by 1 until a port is found.
       def find_open_port(port)
         while true
           begin
@@ -44,6 +46,8 @@ module Tnnl
         end
       end
 
+      # Opens an SSH tunnel from the specified local port, to the requested 
+      # remote host/port.
       def open(host, user, local_port, remote_port)
         # Impose an artificial timeout on establishing a connection to the 
         # remote host.
