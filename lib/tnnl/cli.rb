@@ -56,10 +56,8 @@ module Tnnl
         puts 'ERROR: connection timed out'
       rescue Tnnl::SSH::AuthenticationFailed
         puts 'ERROR: authentication failed'
-      rescue Tnnl::SSH::HostKeyMismatch
-        # TODO: warn user about man-in-the-middle attacks
-        # and prompt them to accept new key
-        puts 'ERROR: host key mismatch'
+      rescue Tnnl::SSH::HostKeyMismatch => e
+        handle_host_key_mismatch(e)
       end
 
       def parse_connection(connection)
@@ -92,6 +90,27 @@ module Tnnl
         raise ArgumentError if parts.any? { |a| a.nil? }
 
         parts
+      end
+
+      # Prompt user to save the new host key in their known hosts file.
+      def handle_host_key_mismatch(error)
+        valid_responses = %w(y n)
+        response = nil
+        
+        while !valid_responses.include?(response)
+          puts "\nWARNING! The remote host key has changed."
+          puts "Someone could be eavesdropping on your SSH connection."
+          puts "It is also possible that the RSA host key has just been changed."
+
+          puts "\nThe fingerprint for the RSA key sent by the remote host is:"
+          puts error.fingerprint
+
+          print "\nAccept this new key in the known hosts file? (y/n): "
+          response = gets.strip.downcase
+        end
+
+        # Record this host and key in the known hosts file if the user wishes.
+        error.remember_host! if response == 'y'
       end
 
     end

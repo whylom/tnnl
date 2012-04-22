@@ -3,14 +3,27 @@ require 'net/ssh'
 module Tnnl
   module SSH
 
-    class HostNotFound < SocketError; end
-    class TimeoutError < Timeout::Error; end
-    class AuthenticationFailed < Net::SSH::AuthenticationFailed; end
-    class HostKeyMismatch < Net::SSH::HostKeyMismatch; end
+    class HostNotFound         < SocketError                    ; end
+    class TimeoutError         < Timeout::Error                 ; end
+    class AuthenticationFailed < Net::SSH::AuthenticationFailed ; end
+
+    # Wraps & forwards method calls to an instance of Net::SSH::HostKeyMismatch
+    class HostKeyMismatch < Net::SSH::Exception
+      def initialize(error)
+        @error = error
+      end
+
+      def method_missing(method, *args)
+        @error.send(method, *args)
+      end
+    end
+
+
 
     TIMEOUT = 15
 
     class << self
+
       def find_open_port(port)
         while true
           begin
@@ -59,8 +72,9 @@ module Tnnl
       rescue Net::SSH::AuthenticationFailed
         raise Tnnl::SSH::AuthenticationFailed
       rescue Net::SSH::HostKeyMismatch => e
-        raise Tnnl::SSH::HostKeyMismatch
+        raise Tnnl::SSH::HostKeyMismatch.new(e)
       end
+    
     end
 
   end
