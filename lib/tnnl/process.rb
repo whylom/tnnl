@@ -7,7 +7,7 @@ module Tnnl
     def self.list
       # Grep the process list to get processes with "tnnl" somewhere in the 
       # name. Format the output from ps for easier parsing.
-      list = `ps -o pid,etime,comm | grep tnnl`.split(/\n/)
+      list = `ps -eo pid,etime,comm | grep tnnl`.split(/\n/)
 
       # Transform each string into an instance of Tnnl::Process.
       processes = list.map do |line|
