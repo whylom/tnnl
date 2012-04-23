@@ -29,9 +29,8 @@ module Tnnl
         local_port = Tnnl::SSH.find_open_port(local_port)
 
         puts "Opening SSH tunnel... "
-        puts "local:#{local_port} ===> #{user}@#{host}:#{remote_port}"
-        
         Tnnl::SSH.open(host, user, local_port, remote_port)
+        puts "local:#{local_port} ===> #{user}@#{host}:#{remote_port}"
 
       rescue Tnnl::SSH::HostNotFound
         puts 'ERROR: could not resolve host'

@@ -32,12 +32,21 @@ module Tnnl
       end
 
       def open(host, user, local_port, remote_port)
+        # Impose an artificial timeout on establishing a connection to the 
+        # remote host.
         Timeout.timeout(TIMEOUT) do
           Net::SSH.start(host, user) do |ssh|
+            # Open an SSH tunnel.
             ssh.forward.local(local_port, '127.0.0.1', remote_port)
-            run = true
-            trap('INT') { run = false }
-            ssh.loop(0.1) { run }
+
+            # All of the exceptions we're ready to handle will have already 
+            # been caught prior to this.  Now we can safely fork a new process
+            # to keep the tunnel open.
+            fork do
+              # Rename the forked process so it can be easily located later.
+              $0 = "tnnl[#{local_port}:#{user}@#{host}:#{remote_port}]"
+              ssh.loop(0.1) { true }
+            end
           end
         end
       rescue SocketError
@@ -50,5 +59,6 @@ module Tnnl
         raise Tnnl::SSH::HostKeyMismatch
       end
     end
+
   end
 end
