@@ -45,7 +45,10 @@ module Tnnl
             fork do
               # Rename the forked process so it can be easily located later.
               $0 = "tnnl[#{local_port}:#{user}@#{host}:#{remote_port}]"
-              ssh.loop(0.1) { true }
+
+              run = true
+              trap('INT') { run = false }
+              ssh.loop(0.1) { run }
             end
           end
         end

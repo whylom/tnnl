@@ -9,6 +9,8 @@ module Tnnl
           help
         elsif command == 'list'
           list
+        elsif command == 'close' || command == 'kill'
+          close(args)
         elsif command.include? ':'
           open(command)
         else
@@ -27,6 +29,16 @@ module Tnnl
       def list
         Tnnl::Process.list.each_with_index do |process,i|
           puts "  #{i+1}. #{process}"
+        end
+      end
+
+      def close(args)
+        if args.first == 'all'
+          Tnnl::Process.kill_all
+        elsif args.any?
+          Tnnl::Process.kill_several(*args.map(&:to_i))
+        else
+          puts 'ERROR: expected "tnnl close all" or "tnnl close [index] [index]..."'
         end
       end
 
