@@ -3,17 +3,17 @@ module Tnnl
     class << self
 
       def run!(args)
-        first = args.shift
+        command = args.shift || 'help'
 
-        if first.nil? || first == 'help'
+        if command == 'help'
           help
-        elsif first.include? ':'
-          open(first)
+        elsif command == 'list'
+          list
+        elsif command.include? ':'
+          open(command)
         else
           error
         end
-      rescue ArgumentError
-        error
       end
 
       def help
@@ -22,6 +22,12 @@ module Tnnl
 
       def error
         puts 'Error messages go here.'
+      end
+
+      def list
+        Tnnl::Process.list.each_with_index do |process,i|
+          puts "  #{i+1}. #{process}"
+        end
       end
 
       def open(connection)
