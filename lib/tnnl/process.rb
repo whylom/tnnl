@@ -1,6 +1,6 @@
 module Tnnl
   class Process
-    attr_accessor :name, :pid, :time_elapsed
+    attr_accessor :name, :pid
 
     class << self  
       # Returns an array of instances of Tnnl::Process representing each of the 
@@ -8,12 +8,12 @@ module Tnnl
       def list
         # Grep the process list to get processes with "tnnl" somewhere in the 
         # name. Format the output from ps for easier parsing.
-        list = `ps -eo pid,etime,comm | grep tnnl`.split(/\n/)
+        list = `ps -eo pid,comm | grep tnnl`.split(/\n/)
 
         # Transform each string into an instance of Tnnl::Process.
         processes = list.map do |line|
-          pid, time_elapsed, name = line.strip.split(' ')
-          self.new(pid, name, time_elapsed)
+          pid, name = line.strip.split(' ')
+          self.new(pid, name)
         end
 
         # Remove any processes we might have found that don't conform to our 
@@ -33,10 +33,9 @@ module Tnnl
     end
 
 
-    def initialize(pid, name, time_elapsed)
+    def initialize(pid, name)
       @pid = pid.to_i
       @name = name
-      @time_elapsed = time_elapsed
     end
 
     def kill
