@@ -72,7 +72,7 @@ module Tnnl
 
         puts "Opening SSH tunnel... "
         Tnnl::SSH.open(host, user, local_port, remote_port)
-        puts "local:#{local_port} ===> #{user}@#{host}:#{remote_port}"
+        puts "localhost:#{local_port}  ==>  #{user}@#{host}:#{remote_port}"
 
       rescue Tnnl::SSH::HostNotFound
         puts 'ERROR: could not resolve host'
