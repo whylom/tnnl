@@ -12,7 +12,7 @@ module Tnnl
           help
         elsif command == 'list'
           list
-        elsif command == 'close' || command == 'kill'
+        elsif command == 'close'
           close(args)
         elsif command.include? ':'
           open(command)
@@ -33,11 +33,9 @@ module Tnnl
               print a numbered list of open SSH tunnels
 
             tnnl close [num] [num...]
-            tnnl kill  [num] [num...]
               close 1 or more tunnels using the number(s) provided by list
 
             tnnl close all
-            tnnl kill all
               close all SSH tunnels opened by this program
     
             For more detailed documentation, please see:
