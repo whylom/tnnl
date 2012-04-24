@@ -8,6 +8,10 @@ native SSH config (at `~/.ssh/config` for most folks).
 
 __This project is still in an early/alpha state. You have been warned. :)__
 
+## Install
+
+    gem install tnnl
+
 ## Usage
 
 ### Open an SSH tunnel
