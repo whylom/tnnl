@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-# Modify load path for development. Most emphatically temporary!
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'tnnl'
 
