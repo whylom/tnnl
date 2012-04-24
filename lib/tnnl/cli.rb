@@ -17,16 +17,33 @@ module Tnnl
         elsif command.include? ':'
           open(command)
         else
-          error
+          help
         end
       end
 
       def help
-        puts 'Help text goes here'
-      end
+        # Shamelessly stolen from https://github.com/holman/boom
+        puts %{
+          tnnl (v#{Tnnl::VERSION}) - a utility for managing SSH tunnels
 
-      def error
-        puts 'Error messages go here.'
+            tnnl [local-port]:[host]:[remote-port]
+              open an SSH tunnel between a port on localhost and port on a remote machine
+
+            tnnl list
+              print a numbered list of open SSH tunnels
+
+            tnnl close [num] [num...]
+            tnnl kill  [num] [num...]
+              close 1 or more tunnels using the number(s) provided by list
+
+            tnnl close all
+            tnnl kill all
+              close all SSH tunnels opened by this program
+    
+            For more detailed documentation, please see:
+              https://github.com/whylom/tnnl
+
+        }.gsub(/^ {10}/, '') # strip the first 10 spaces of every line
       end
 
       def list
