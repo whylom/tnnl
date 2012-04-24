@@ -2,33 +2,45 @@
 
 Tnnl is a command-line utility for wrangling SSH tunnels.
 
-This will eventually be released as a gem. For now, it's just a pile of lovely,
-lovely code.
+Unlike most SSH tunnel utilities I've come across, Tnnl will not clutter your filesystem with a preferences YAML file. Instead it will try to make use of your native SSH config (at `~/.ssh/config` for most folks).
 
-Unlike pretty much every other SSH tunnel utility I've come across, Tnnl will 
-not store your preferences in some random YAML file. Instead it will try to 
-make good use of your native SSH config (at `~/.ssh/config` for most folks).
+__This project is still in an early/alpha state. You have been warned. :)__
 
-The command-line interface will look something like this:
+## Usage
 
-    $ tnnl 1234:user@host:5678
-    #=> Opens a tunnel from local port 1234 to port 5678 on host.
-    #=> This will fork a new process and return your command prompt.
+### Open an SSH tunnel
+
+Open an SSH tunnel between local port 1234 and port 5678 on the remote host `mysql.spatula.grommet`. If local port 1234 is unavailable, Tnnl will increment by 1 until it finds an open port.
+
+    $ tnnl 1234:admin@mysql.spatula.grommet:3306
+
+You can omit the local port number, and Tnnl will try to use the same port for the local and remote hosts.
     
-    $ tnnl user@host:3000
-    #=> Tries to use 3000 for the local port, and increments until it finds an
-    #=> open local port.
+    $ tnnl admin@mysql.spatula.grommet:3306
     
-    $ tnnl foo:3000
-    #=> Looks up username and hostname in your SSH config under "foo".
+If you have defined a host alias in your SSH config, you can save yourself some keystrokes by referencing that alias.
+
+    $ tnnl db:3306
+
+### Find and close open tunnels
     
+Use `tnnl list` to list all open SSH tunnels that were created by Tnnl.
+
     $ tnnl list
-    1. local:3307 ===> foo:3306
-    2. local:3000 ===> 107.22.164.247:3000
-    3. local:666  ===> chunkybacon.org:666
+    1. localhost:3307  ==>  mysql.spatula.grommet:3306
+    2. localhost:3000  ==>  123.45.67.89:3000
+    3. localhost:666   ==>  chunkybacon.gov:666
 
+You can use the index numbers referenced in `tnnl list` to close 1 or more tunnels.
+
+    $ tnnl close 2
     $ tnnl close 1 3
-    #=> Closes tunnels #1 and #3 from the list.
-    
+
+Or close all tunnels created by Tnnl.
+
     $ tnnl close all
-    #=> Closes all tunnels.
+
+## Known Issues
+
+- The list feature relies on renaming processes via $0, which does not work properly on Ruby 1.9.3-p0 on OS X. This appears to be an issue with this particular build of Ruby on this platform (https://groups.google.com/forum/#!topic/urug/zfmEGqjX47M). 1.9.3-p0 users on OS X are encouraged to upgrade to a newer build.
+- Tnnl uses Net::SSH under the hood, and Net::SSH currently supports only a subset of OpenSSH configuration options. The `StrictHostKeyChecking` preference is not supported, so Tnnl errs on the safe side and prompts you to update ~/.ssh/known_hosts when a modified host key is detected. Feel free to open an issue and/or submit a pull request if this is ruining your day.
