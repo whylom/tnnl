@@ -42,23 +42,26 @@ module Tnnl
     
             For more detailed documentation, please see:
               https://github.com/whylom/tnnl
-
         }.gsub(/^ {10}/, '') # strip the first 10 spaces of every line
       end
 
+      # Display a numbered list of SSH tunnels opened by this utility.
       def list
-        Tnnl::Process.list.each_with_index do |process,i|
+        processes = Tnnl::Process.list
+        abort 'There are no SSH tunnels open at this time.' if processes.empty?
+
+        processes.each_with_index do |process,i|
           puts "  #{i+1}. #{process}"
         end
       end
 
       def close(args)
-        if args.first == 'all'
+        if args.first == 'all' && args.size == 1
           Tnnl::Process.kill_all
         elsif args.any?
           Tnnl::Process.kill_several(*args.map(&:to_i))
         else
-          puts 'ERROR: expected "tnnl close all" or "tnnl close [index] [index]..."'
+          abort "Usage:\n tnnl close all\n tnnl close [index] [index...]"
         end
       end
 
