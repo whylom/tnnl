@@ -1,5 +1,3 @@
-require 'net/ssh'
-
 module Tnnl
   module SSH
 
