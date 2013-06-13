@@ -2,23 +2,13 @@ module Tnnl
   class Process
     attr_accessor :name, :pid
 
-    class << self  
-      # Returns an array of instances of Tnnl::Process representing each of the 
+    class << self
+      # Returns an array of instances of Tnnl::Process representing each of the
       # currently open SSH tunnels created by Tnnl on this machine.
       def list
-        # Grep the process list to get processes with "tnnl" somewhere in the 
-        # name. Format the output from ps for easier parsing.
-        list = `ps -eo pid,comm | grep tnnl`.split(/\n/)
-
-        # Transform each string into an instance of Tnnl::Process.
-        processes = list.map do |line|
-          pid, name = line.strip.split(' ')
+        processes = parse_process_list.map do |pid, name|
           self.new(pid, name)
         end
-
-        # Remove any processes we might have found that don't conform to our 
-        # naming convention.
-        processes.select { |p| p.name =~ /^tnnl\[.*\]$/ }
       end
 
       def kill_several(*to_kill)
@@ -30,8 +20,16 @@ module Tnnl
       def kill_all
         list.each(&:kill)
       end
-    end
 
+    private
+
+      # Grep the process list to get processes with "tnnl" somewhere in the
+      # name. Format the output from ps for easier parsing.
+      def parse_process_list
+        array = `ps -eo pid,comm | grep tnnl`.split(/\n/)
+        array.map { |string| string.strip.split(" ") }
+      end
+    end
 
     def initialize(pid, name)
       @pid = pid.to_i

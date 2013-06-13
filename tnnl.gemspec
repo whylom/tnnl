@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
   gem.version       = Tnnl::VERSION
 
   gem.add_dependency 'net-ssh', '~> 2.3.0'
+  gem.add_development_dependency 'rspec'
 end
